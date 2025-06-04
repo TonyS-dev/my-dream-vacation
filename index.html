@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dream Holiday: Halifax, Canada</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .slide {
+            width: 90%;
+            max-width: 1000px;
+            height: 80vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide-header {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .slide-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .slide-subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .slide-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+            height: 100%;
+        }
+
+        .content-text {
+            font-size: 1.3em;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .content-text h3 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .content-text ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-text li {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .content-text li:before {
+            content: "🌊";
+            position: absolute;
+            left: 0;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .image-placeholder:hover {
+            transform: scale(1.02);
+        }
+
+        .real-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .image-mosaic {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            height: 100%;
+        }
+
+        .image-mosaic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .image-mosaic img:hover {
+            transform: scale(1.05);
+        }
+
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        .fullscreen-image {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10001;
+        }
+
+        .close-fullscreen:hover {
+            color: #ff6b6b;
+        }
+
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .intro-slide {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .intro-slide .slide-title {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .intro-slide .slide-subtitle {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+
+        .intro-content {
+            font-size: 1.3em;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .conclusion-slide {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .highlight-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #fff;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide.active .content-text,
+        .slide.active .image-placeholder {
+            animation: slideIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active intro-slide">
+            <div class="slide-content">
+                <h1 class="slide-title">My Dream Holiday</h1>
+                <h2 class="slide-subtitle">Halifax, Nova Scotia, Canada</h2>
+                <div class="intro-content">
+                    <p>A journey to the heart of Maritime Canada</p>
+                    <div class="highlight-box">
+                        <p>Discover why this Atlantic coast gem captured my heart</p>
+                    </div>
+                    <p style="margin-top: 30px; font-size: 1.2em; font-style: italic;">
+                        by Antonio Santiago
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Why Halifax -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Why I Choose Halifax</h2>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="content-text">
+                        <h3>The Perfect Maritime City</h3>
+                        <ul>
+                            <li>Beautiful Atlantic Ocean location</li>
+                            <li>Perfect blend of history and modern culture</li>
+                            <li>Friendly, welcoming atmosphere</li>
+                        </ul>
+                        <p style="margin-top: 20px;">Halifax offers the perfect balance of relaxation and adventure!</p>
+                    </div>
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://cdn.britannica.com/06/3106-050-8D0232A5/Nova-Scotia-map-MAP-locator-cities-CORE.jpg" alt="Nova Scotia Map" onclick="openFullscreen(this)">
+                            <img src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/14/ca/d6/2f/halifax-waterfront.jpg?w=1400&h=1400&s=1" alt="Halifax Waterfront" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Halifax Waterfront -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Halifax Waterfront</h2>
+                <p class="slide-subtitle">My Favorite Walk</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://www.seesight-tours.com/_next/image?url=https%3A%2F%2Fres.cloudinary.com%2Fsee-sight-tours%2Fimage%2Fupload%2Fv1581441853%2Fhalifax-harbourfront-night.jpg&w=3840&q=100" alt="Halifax Harbourfront Night" onclick="openFullscreen(this)">
+                            <img src="https://buildns.ca/wp-content/uploads/2019/04/visit-halifax-waterfront-3.jpg" alt="Halifax Waterfront Day" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                    <div class="content-text">
+                        <h3>Waterfront Activities</h3>
+                        <p>I love strolling along the famous Halifax boardwalk. The waterfront offers:</p>
+                        <ul>
+                            <li>Spectacular harbor views</li>
+                            <li>Street performers and local vendors</li>
+                            <li>Fresh ocean air and peaceful atmosphere</li>
+                        </ul>
+                        <p><strong>I enjoy watching the boats while breathing the maritime air!</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Peggy's Cove -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Peggy's Cove</h2>
+                <p class="slide-subtitle">Iconic Maritime Beauty</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="content-text">
+                        <h3>Canada's Most Famous Lighthouse</h3>
+                        <p>Peggy's Cove is absolutely magical! This iconic destination features:</p>
+                        <ul>
+                            <li>Historic red and white lighthouse</li>
+                            <li>Smooth granite rock formations</li>
+                            <li>Charming fishing village atmosphere</li>
+                        </ul>
+                        <p><strong>I love the peaceful feeling and breathtaking scenery!</strong></p>
+                    </div>
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://downeasterpackages.com/wp-content/uploads/6.Peggys-Cove-Experience.png" alt="Peggy's Cove Lighthouse" onclick="openFullscreen(this)">
+                            <img src="https://www.peggyscoveresort.com/wp-content/uploads/2021/03/S__43728904.jpg" alt="Peggy's Cove View" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Historic Sites & Culture -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">History & Culture</h2>
+                <p class="slide-subtitle">Exploring Halifax's Heritage</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://historicplacesdays.ca/wp-content/uploads/2021/05/CitadelCNS0028-scaled.jpg" alt="Halifax Citadel" onclick="openFullscreen(this)">
+                            <img src="https://image.wmsm.co/63593780dec76/halifax-citadel-national-historic-site-1.webp?quality=80&width=1280" alt="Citadel Historic Site" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                    <div class="content-text">
+                        <h3>Cultural Experiences</h3>
+                        <p>I enjoy exploring Halifax's rich history and vibrant culture:</p>
+                        <ul>
+                            <li>Halifax Citadel National Historic Site</li>
+                            <li>Panoramic views of the city</li>
+                            <li>Live music venues and nightlife</li>
+                        </ul>
+                        <p><strong>I like the perfect mix of history and modern entertainment!</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Accommodation -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Where I Stay</h2>
+                <p class="slide-subtitle">Perfect Halifax Accommodation</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="content-text">
+                        <h3>My Preferred Hotels</h3>
+                        <p>I prefer staying in downtown Halifax for the best experience:</p>
+                        <ul>
+                            <li>Boutique hotels with local character</li>
+                            <li>Ocean views from the room</li>
+                            <li>Walking distance to waterfront</li>
+                        </ul>
+                        <p><strong>I love waking up to see Halifax Harbor from my window!</strong></p>
+                    </div>
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://www.thegate.ca/wp-content/uploads/2022/03/0K4A7617.jpg" alt="Halifax Hotel Room View" onclick="openFullscreen(this)">
+                            <img src="https://images.squarespace-cdn.com/content/v1/55d291cfe4b0323a54105d64/1440038101105-CY2W5QIXWY3ABXJFYC3X/banner-bg.jpg?" alt="Halifax Boutique Hotel" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Seafood -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Amazing Halifax Food</h2>
+                <p class="slide-subtitle">Fresh Atlantic Seafood</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://www.canadaculinary.com/images/transforms/stories/_background/CC2020-_-Peggys-Cove-lobster-roll-_-credit-@daveandsky.jpg" alt="Halifax Lobster Roll" onclick="openFullscreen(this)">
+                            <img src="https://images.squarespace-cdn.com/content/v1/602810f8c8fe0a7f210814fd/0c0d896d-1a54-4d64-a4b7-1f1d068fbe1a/4B2A3980.jpg" alt="Halifax Fish and Chips" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                    <div class="content-text">
+                        <h3>Seafood Paradise</h3>
+                        <p>Halifax has incredible fresh seafood that I absolutely love:</p>
+                        <ul>
+                            <li>Fresh Atlantic lobster rolls</li>
+                            <li>Traditional fish and chips</li>
+                            <li>Cozy waterfront restaurants</li>
+                        </ul>
+                        <p><strong>I enjoy eating the freshest lobster in the world!</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Local Specialties -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Local Halifax Treats</h2>
+                <p class="slide-subtitle">Unique Maritime Cuisine</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-grid">
+                    <div class="content-text">
+                        <h3>Signature Halifax Dishes</h3>
+                        <p>I love trying Halifax's unique local specialties:</p>
+                        <ul>
+                            <li>Halifax Donair - the city's signature dish</li>
+                            <li>Blueberry grunt - traditional Maritime dessert</li>
+                            <li>Regional specialties you can't find elsewhere</li>
+                        </ul>
+                        <p><strong>I enjoy discovering authentic flavors unique to Halifax!</strong></p>
+                    </div>
+                    <div class="image-placeholder">
+                        <div class="image-mosaic">
+                            <img src="https://xoxobella.com/wp-content/uploads/2024/06/Donair_31.jpg" alt="Halifax Donair" onclick="openFullscreen(this)">
+                            <img src="https://assets.epicurious.com/photos/5b3a2da26dac3c5024ad8ca1/1:1/w_2560%2Cc_limit/blueberry-grunt-recipe-070218.jpg" alt="Blueberry Grunt Dessert" onclick="openFullscreen(this)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Conclusion -->
+        <div class="slide conclusion-slide">
+            <div class="slide-content">
+                <h2 class="slide-title">Halifax - My Perfect Dream Destination</h2>
+                <div class="intro-content">
+                    <div class="highlight-box">
+                        <h3>Why Halifax is Perfect:</h3>
+                        <p>🌊 Beautiful ocean scenery and maritime atmosphere</p>
+                        <p>🏛️ Rich history and cultural experiences</p>
+                        <p>🦞 Amazing fresh seafood and local cuisine</p>
+                        <p>⚖️ Perfect balance of relaxation and adventure</p>
+                    </div>
+                    <p style="font-size: 1.4em; margin-top: 30px;">
+                        <strong>Halifax combines everything I love in a perfect vacation!</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Thank You -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Thank You!</h2>
+            </div>
+            <div class="slide-content" style="text-align: center; justify-content: center;">
+                <div class="content-text" style="text-align: center;">
+                    <h3 style="font-size: 2.5em; margin-bottom: 30px;">Questions?</h3>
+                    <div class="image-placeholder">
+                        <img src="https://adventures.com/media/18478/s-mgp-halifax-city-sightseeing-boat-docks-yachts-sunset-view-canada.jpg" alt="Halifax Harbor Sunset" class="real-image" onclick="openFullscreen(this)">
+                    </div>
+                    <p style="font-size: 1.5em; color: #2a5298; font-weight: bold;">
+                        I hope you enjoyed discovering Halifax with me!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
+        </div>
+
+        <!-- Slide Counter -->
+        <div class="slide-counter">
+            <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
+        </div>
+    </div>
+
+    <!-- Fullscreen Image Overlay -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+        <span class="close-fullscreen" onclick="closeFullscreen()">&times;</span>
+        <img class="fullscreen-image" id="fullscreenImage" src="" alt="">
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = index + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newIndex = currentSlideIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlideIndex = newIndex;
+                showSlide(currentSlideIndex);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            } else if (event.key === 'Escape') {
+                closeFullscreen();
+            }
+        });
+
+        // Fullscreen image functionality
+        function openFullscreen(img) {
+            const overlay = document.getElementById('fullscreenOverlay');
+            const fullscreenImg = document.getElementById('fullscreenImage');
+            fullscreenImg.src = img.src;
+            fullscreenImg.alt = img.alt;
+            overlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeFullscreen() {
+            const overlay = document.getElementById('fullscreenOverlay');
+            overlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
